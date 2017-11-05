@@ -16,12 +16,24 @@ h1{
     width: 30px;
     height: 30px;
     border-radius: 50%;
+    border: 1px solid darkgray;
     margin: 4px;
 }
 
 .player1{
     background-color: white;
 }
-.player2{
+.player-1{
     background-color: #484848;
+}
+
+#notifications {
+    display: inline-block;
+    width: 200px;
+    border: 2px solid dodgerblue;
+    padding: 5px;
+}
+
+#mainBoard {
+    display: inline-block;
 }
