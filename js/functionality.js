@@ -24,8 +24,10 @@ $("#mainBoard").on("click", "td", function () {
 
             player = -player;
             $("#notifications").html("It's " + (player === 1 ? 'white' : 'black') + " player's turn");
-            $("#notifications").append('<div class="piesa player' + player + '" style="background-color: #444"></div>');
+            $("#notifications").append('<div class="piesa player' + player + '"></div>');
             canClick = false;
+
+            saveData(player, matrix);
         } else {
             console.log("I'm sorry, you can not click here! Please try somewhere else!")
         }
@@ -50,17 +52,21 @@ function generateEmptyTable() {
 }
 
 function load() {
-    $.ajax('date.json', {
+    $.ajax('read.php', {
         cache: false,
         dataType: 'json'
     }).done(function (raspuns) {
         console.debug('contacts loaded', raspuns);
         matrix = raspuns.table;
+        // fixing "-1/1" as string
+        raspuns.player *= 1;
         player = raspuns.player;
         $("#notifications").html("It's " + (player === 1 ? 'white' : 'black') + " player's turn");
-        $("#notifications").append('<div class="piesa player' + player + '" style="background-color: #444"></div>');
+        $("#notifications").append('<div class="piesa player' + player + '"></div>');
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
+                // fixing "0" as string
+                matrix[i][j] *= 1;
                 var piesa = matrix[i][j];
                 if (piesa) {
                     var td = $('#mainBoard tr').eq(i).find('td').eq(j);
@@ -137,4 +143,31 @@ function checkNeighbours(rowIndex, cellIndex) {
 
     //direction left (0, -1)
     checkIfBound(rowIndex, cellIndex, 0, -1);
+}
+
+
+function saveData(player, table) {
+    return $.ajax('save.php', {
+        dataType: 'json',
+        method: 'POST',
+        data: {
+            player: player,
+            table: table
+        }
+    });
+}
+
+function resetGame() {
+    saveData(1, [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, -1, 0, 0, 0],
+        [0, 0, 0, -1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0]
+    ]).always(function () {
+        location.reload();
+    });
 }
